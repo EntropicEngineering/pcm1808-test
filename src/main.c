@@ -73,7 +73,7 @@ void main(void) {
     uint32_t baudrate, dtr = 0U;
     int ret;
 
-    nrfx_i2s_config_t i2c_cfg = NRFX_I2S_DEFAULT_CONFIG(0, 1, NRFX_I2S_PIN_NOT_USED, 2, NRFX_I2S_PIN_NOT_USED);
+    nrfx_i2s_config_t i2c_cfg = NRFX_I2S_DEFAULT_CONFIG(15, 14, NRFX_I2S_PIN_NOT_USED, 32, NRFX_I2S_PIN_NOT_USED);
     i2c_cfg.mode = NRF_I2S_MODE_MASTER;
     i2c_cfg.format = NRF_I2S_FORMAT_ALIGNED;
     i2c_cfg.alignment = NRF_I2S_ALIGN_LEFT;
@@ -82,9 +82,9 @@ void main(void) {
     i2c_cfg.mck_setup = NRF_I2S_MCK_32MDIV16;
     i2c_cfg.ratio = NRF_I2S_RATIO_48X;
 
-    ret = (int) nrfx_i2s_init(&i2c_cfg, i2s_event_handler);
-    if (ret != 0) {
-        LOG_ERR("I2S initialization failed");
+    ret = nrfx_i2s_init(&i2c_cfg, i2s_event_handler);
+    if (ret != NRFX_SUCCESS) {
+        LOG_ERR("I2S initialization failed: %u", ret);
         return;
     }
 
@@ -96,7 +96,7 @@ void main(void) {
 
     ret = usb_enable(NULL);
     if (ret != 0) {
-        LOG_ERR("Failed to enable USB");
+        LOG_ERR("Failed to enable USB: %u", ret);
         return;
     }
 
@@ -121,11 +121,14 @@ void main(void) {
     if (ret) {
         LOG_WRN("Failed to get baudrate, ret code %d", ret);
     } else {
-        LOG_INF("Baudrate detected: %lu", baudrate);
+        LOG_INF("Baudrate detected: %u", baudrate);
     }
 
     uart_irq_callback_set(uart_dev, uart_IRQ_handler);
 
     /* Enable tx interrupts */
     uart_irq_tx_enable(uart_dev);
+
+    ret = nrfx_i2s_start(&m_i2s_buffers, DATA_BUFFER_WORD_COUNT, 0);
+    if (ret != NRFX_SUCCESS) LOG_ERR("I2S failed to start: %u", ret);
 }

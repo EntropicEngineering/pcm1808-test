@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13.1)
 
 # Hardware definition
 set(BOARD nrf52840dk_nrf52840)
+set(CONFIG_UART_CONSOLE n CACHE STRING "Force no UART console")
 
 # Define Zephyr's location in the repo.
 get_filename_component(ZEPHYR_BASE ${CMAKE_SOURCE_DIR}/../zephyr ABSOLUTE CACHE)

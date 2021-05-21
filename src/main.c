@@ -34,6 +34,8 @@ static void uart_IRQ_handler(const struct device *dev, void __unused *user_data)
             } else {
                 serial_status.p_tx_buffer = NULL;
                 serial_status.bytes_remaining = 0;
+                // Disable tx IRQ immediately after data is finished sending
+                uart_irq_tx_disable(uart_dev);
             }
         }
     }
@@ -47,6 +49,8 @@ static void i2s_event_handler(nrfx_i2s_buffers_t const *p_released, uint32_t sta
             expect_initial_void_buffer = false;
         } else if (p_released->p_rx_buffer != NULL) {
             next_buffer = (uint8_t) ((uint8_t *) p_released->p_rx_buffer == m_data_buffers[0]);
+            // Only enable tx IRQ immediately before sending data
+            uart_irq_tx_enable(uart_dev);
             int sent = uart_fifo_fill(uart_dev, (uint8_t *) p_released->p_rx_buffer, DATA_BUFFER_WORD_COUNT * 4);
             if (sent < DATA_BUFFER_WORD_COUNT * 4) {
                 serial_status.p_tx_buffer = sent + (uint8_t *) p_released->p_rx_buffer;
@@ -54,6 +58,8 @@ static void i2s_event_handler(nrfx_i2s_buffers_t const *p_released, uint32_t sta
             } else {
                 serial_status.p_tx_buffer = NULL;
                 serial_status.bytes_remaining = 0;
+                // Disable tx IRQ immediately after data is finished sending
+                uart_irq_tx_disable(uart_dev);
             }
         } else {
             LOG_ERR("I2S data corruption occurred");
@@ -125,9 +131,6 @@ void main(void) {
     }
 
     uart_irq_callback_set(uart_dev, uart_IRQ_handler);
-
-    /* Enable tx interrupts */
-    uart_irq_tx_enable(uart_dev);
 
     ret = nrfx_i2s_start(&m_i2s_buffers, DATA_BUFFER_WORD_COUNT, 0);
     if (ret != NRFX_SUCCESS) LOG_ERR("I2S failed to start: %u", ret);

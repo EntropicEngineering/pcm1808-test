@@ -1,0 +1,23 @@
+/ {
+    chosen {
+        /delete-property/ zephyr,console;
+		/delete-property/ zephyr,shell-uart;
+		/delete-property/ zephyr,uart-mcumgr;
+		/delete-property/ zephyr,bt-mon-uart;
+		/delete-property/ zephyr,bt-c2h-uart;
+    };
+
+    leds {
+        /delete-property/ led_0;
+        /delete-property/ led_1;
+        /delete-property/ led_2;
+        /delete-property/ led_3;
+    };
+
+    aliases {
+        /delete-property/ led0;
+        /delete-property/ led1;
+        /delete-property/ led2;
+        /delete-property/ led3;
+    };
+};

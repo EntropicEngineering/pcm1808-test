@@ -66,7 +66,7 @@ static void i2s_event_handler(nrfx_i2s_buffers_t const *p_released, uint32_t sta
         }
         m_i2s_buffers.p_rx_buffer = (uint32_t *) m_data_buffers[next_buffer];
         int ret = nrfx_i2s_next_buffers_set(&m_i2s_buffers);
-        if (ret != 0) {
+        if (ret != NRFX_SUCCESS) {
             LOG_ERR("I2S error setting next buffer: %u", ret);
         }
     } else {
@@ -93,6 +93,7 @@ void main(void) {
         LOG_ERR("I2S initialization failed: %u", ret);
         return;
     }
+    IRQ_CONNECT(37, NRFX_I2S_DEFAULT_CONFIG_IRQ_PRIORITY, nrfx_i2s_irq_handler, NULL, 0);
 
     uart_dev = (struct device *) device_get_binding("CDC_ACM_0");
     if (!uart_dev) {

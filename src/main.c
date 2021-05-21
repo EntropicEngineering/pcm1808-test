@@ -79,7 +79,7 @@ void main(void) {
     uint32_t baudrate, dtr = 0U;
     int ret;
 
-    nrfx_i2s_config_t i2c_cfg = NRFX_I2S_DEFAULT_CONFIG(15, 14, NRFX_I2S_PIN_NOT_USED, 32, NRFX_I2S_PIN_NOT_USED);
+    nrfx_i2s_config_t i2c_cfg = NRFX_I2S_DEFAULT_CONFIG(41, 15, NRFX_I2S_PIN_NOT_USED, NRFX_I2S_PIN_NOT_USED, 14);
     i2c_cfg.mode = NRF_I2S_MODE_MASTER;
     i2c_cfg.format = NRF_I2S_FORMAT_ALIGNED;
     i2c_cfg.alignment = NRF_I2S_ALIGN_LEFT;

@@ -17,7 +17,7 @@ parser.add_argument('outfile', help='Name of file to save data to.')
 args = parser.parse_args()
 
 samples = round(args.seconds * SAMPLE_RATE * CHANNELS)
-data = bytearray(samples * SAMPLE_WIDTH)
+data = bytearray(samples * SAMPLE_WIDTH // 8)
 
 with serial.Serial(args.port, 115200) as ser:
     for i in range(samples):
@@ -29,5 +29,5 @@ with serial.Serial(args.port, 115200) as ser:
         # Drop high byte of serial data
 
 with wave.open(args.outfile, 'wb') as wav:
-    wav.setparams((CHANNELS, SAMPLE_WIDTH // 8, SAMPLE_RATE, samples // CHANNELS, 'NONE', 'NONE'))
-    wav.writeframes(data)
+    wav.setparams((CHANNELS, SAMPLE_WIDTH // 8, SAMPLE_RATE, samples, 'NONE', 'NONE'))
+    wav.writeframesraw(data)
